@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.20.0] - 2026-09-14
+
+### Added
+
+- `cwl2ogc` is available as a [transpiler-mate](https://transpiler-mate.github.io/transpiler-mate-api/) plugin.
+
 ## [0.19.0] - 2026-07-28
 
 ### Changed
