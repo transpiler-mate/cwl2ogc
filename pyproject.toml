@@ -29,17 +29,8 @@ classifiers = [
 dependencies = [
   "cwl-utils>=0.43",
   "loguru==0.7.3",
+  "transpiler-mate-api==1.0.0"
 ]
-
-[tool.hatch.envs.transpiler-mate]
-skip-install = false
-dependencies = [
-  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
-]
-
-# TODO remove me as soon as transpiler-mate-api is on PyPI
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [project.entry-points."transpiler_mate.plugins"]
 cwl2ogc = "cwl2ogc.plugin:cwl2ogc"
