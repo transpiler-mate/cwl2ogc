@@ -1,4 +1,12 @@
-# CWL Worflow inputs/outputs to OGC API Processes inputs/outputs
+# CWL Workflow inputs/outputs to OGC API Processes inputs/outputs
+
+!!! warning "transpiler-mate plugin available since 0.20.0"
+
+    Since release **0.20.0**, `cwl2ogc` is also available as a
+    [transpiler-mate](https://transpiler-mate.github.io/transpiler-mate-api/) plugin.
+    Use `transpiler-mate cwl2ogc` for command-line conversion; the standalone
+    `cwl2ogc` command was removed in 0.18.0. The Python library remains available.
+    Follow the [plugin guide](plugin.md) for installation, usage, and output details.
 
 The OGC API - Processes Part 2: Deploy, Replace, Undeploy (DRU) specification enables the deployment of executable Application Packages, such as CWL workflows, as processing services. 
 
