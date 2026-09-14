@@ -15,8 +15,8 @@
 site_name: CWL to OGC
 site_url: https://eoap.github.io/cwl2ogc/
 site_author: Fabrice Brito, Simone Tripodi
-repo_url: https://github.com/eoap/cwl2ogc/
-repo_name: eoap/cwl2ogc
+repo_url: https://github.com/transpiler-mate/cwl2ogc/
+repo_name: transpiler-mate/cwl2ogc
 
 theme:
     logo: imgs/icon-eoap.png

@@ -108,14 +108,14 @@ task lint
 
 ## Documentation
 
-Project docs: https://eoap.github.io/cwl2ogc/
+Project docs: https://transpiler-mate.github.io/cwl2ogc//
 
 Plugin and CLI docs: [docs/plugin.md](docs/plugin.md)
 
 ## Contributing
 
 Issues and pull requests are welcome:
-https://github.com/eoap/cwl2ogc/issues
+https://github.com/transpiler-mate/cwl2ogc/issues
 
 ### Local quality checks
 
