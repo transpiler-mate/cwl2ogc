@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Fabrice Brito, Simone Tripodi" /><link rel="canonical" href="https://eoap.github.io/cwl2ogc/plugin/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Transpiler-Mate plugin - CWL to OGC</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Transpiler-Mate plugin";
+        var mkdocs_page_input_path = "plugin.md";
+        var mkdocs_page_url = "/cwl2ogc/plugin/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported conversions</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../essential-input-parameters/">Essential Input Parameters</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../array-inputs/">Array Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../inclusive-exclusive-inputs/">Inclusive and Exclusive Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../exclusive-input-parameters-expressions/">Exclusive Input Parameters with Expressions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../graph/">Document graph</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >More examples</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../complex-cwl-types/">Complex CWL types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../imported-cwl-types/">Imported CWL types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../string-formats/">String formats</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../schema/">JSON Schema generation</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Transpiler-Mate plugin</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#convert-a-cwl-document">Convert a CWL document</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#generated-output">Generated output</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#migrating-from-the-former-cli">Migrating from the former CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#plugin-registration">Plugin registration</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">API doc</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CWL to OGC</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Transpiler-Mate plugin</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/transpiler-mate/cwl2ogc/edit/master/docs/plugin.md">Edit on transpiler-mate/cwl2ogc</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="using-the-transpiler-mate-plugin">Using the transpiler-mate plugin</h1>
+<div class="admonition warning">
+<p class="admonition-title">Available since cwl2ogc 0.20.0</p>
+<p>Since release <strong>0.20.0</strong>, <code>cwl2ogc</code> is also available as a
+<a href="https://transpiler-mate.github.io/transpiler-mate-api/">transpiler-mate</a> plugin.
+The standalone <code>cwl2ogc</code> command was removed in 0.18.0; use
+<code>transpiler-mate cwl2ogc</code> for command-line conversion.</p>
+</div>
+<p>The plugin converts the inputs and outputs of the CWL processes loaded by
+transpiler-mate into OGC API - Processes I/O descriptions. The Python converter
+API remains available independently of the runtime.</p>
+<h2 id="installation">Installation</h2>
+<p>Install the runtime and plugin in the same Python environment (Python 3.10 or
+later):</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1">pip<span class="w"> </span>install<span class="w"> </span>transpiler-mate-runtime<span class="w"> </span><span class="s2">"cwl2ogc&gt;=0.20.0"</span>
+</span></code></pre></div>
+<p>The <code>cwl2ogc</code> package includes the plugin and depends on <code>transpiler-mate-api</code>.
+The separate <code>transpiler-mate-runtime</code> package provides the <code>transpiler-mate</code>
+command and discovers installed plugins automatically. No manual registration
+is needed.</p>
+<p>Check that the command is available:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1">transpiler-mate<span class="w"> </span>--help
+</span><span id="__span-1-2">transpiler-mate<span class="w"> </span>cwl2ogc<span class="w"> </span>--help
+</span></code></pre></div>
+<h2 id="convert-a-cwl-document">Convert a CWL document</h2>
+<p>Replace <code>workflow.cwl</code> with the path to your CWL application package:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1">transpiler-mate<span class="w"> </span>cwl2ogc<span class="w"> </span>workflow.cwl
+</span></code></pre></div>
+<p>By default, this writes <code>processes.json</code> in the current working directory.
+Choose a destination with <code>--output</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1">transpiler-mate<span class="w"> </span>cwl2ogc<span class="w"> </span>--output<span class="w"> </span>build/processes.json<span class="w"> </span>workflow.cwl
+</span></code></pre></div>
+<p>The plugin creates missing parent directories and overwrites an existing output
+file. Its plugin-specific option is:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--output PATH</code></td>
+<td><code>processes.json</code></td>
+<td>Destination for the generated JSON document.</td>
+</tr>
+</tbody>
+</table>
+<p>Source loading and application metadata validation are handled by the runtime
+before the plugin runs. The CWL document must satisfy the runtime's metadata
+requirements; a document accepted by the standalone Python converter may need
+additional application metadata for runtime use. The current runtime expects
+document-level metadata surrounding a <code>$graph</code> and validates it against its
+<code>SoftwareApplication</code> model. See the
+<a href="https://terradue.github.io/transpiler-mate-runtime/">runtime documentation</a>
+for source adapters, metadata requirements, and shared command options.</p>
+<h2 id="generated-output">Generated output</h2>
+<p>The output is an indented JSON object containing the runtime's serialized
+application metadata plus a <code>processes</code> mapping. Each key is the CWL process ID
+as supplied by the loader, which may be a full URI including a fragment.</p>
+<p>Each process entry contains:</p>
+<ul>
+<li><code>class_</code>, <code>label</code>, and <code>doc</code>, when present and non-empty on the loaded process;</li>
+<li><code>inputs</code>, generated by <code>BaseCWLtypes2OGCConverter.get_inputs()</code>;</li>
+<li><code>outputs</code>, generated by <code>BaseCWLtypes2OGCConverter.get_outputs()</code>.</li>
+</ul>
+<p>The plugin converts every process in <code>context.processes</code>. For a document with a
+<code>$graph</code>, this can include both workflows and tools. A source fragment such as
+<code>workflow.cwl#main</code> selects a process in the runtime context but does <strong>not</strong>
+restrict this plugin's output to that process.</p>
+<p>The generated document contains application metadata and process I/O schemas;
+it does not deploy a process to an OGC API server. For separate input/output
+JSON Schema documents, use the <a href="../#json-schema">Python converter API</a>.</p>
+<h2 id="migrating-from-the-former-cli">Migrating from the former CLI</h2>
+<p>Replace the old <code>cwl2ogc</code> executable with <code>transpiler-mate cwl2ogc</code> and install
+the runtime alongside the plugin. The plugin accepts <code>--output</code> and a source
+location; it does not expose the former <code>--workflow-id</code> option. Update consumers
+to read the <code>inputs</code> and <code>outputs</code> under each ID in the <code>processes</code> mapping.</p>
+<h2 id="plugin-registration">Plugin registration</h2>
+<p>The package declares the following Python entry point:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><span class="k">[project.entry-points.</span><span class="s2">"transpiler_mate.plugins"</span><span class="k">]</span>
+</span><span id="__span-4-2"><span class="n">cwl2ogc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cwl2ogc.plugin:cwl2ogc"</span>
+</span></code></pre></div>
+<p>The plugin uses <code>Cwl2OgcOptions</code> for option validation and receives a
+<code>TranspilerContext</code> from the runtime. See the
+<a href="https://transpiler-mate.github.io/transpiler-mate-api/">transpiler-mate API documentation</a>
+for the shared plugin contract.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../schema/" class="btn btn-neutral float-left" title="JSON Schema generation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api/" class="btn btn-neutral float-right" title="API doc">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/transpiler-mate/cwl2ogc/" class="fa fa-code-fork" style="color: #fcfcfc"> transpiler-mate/cwl2ogc</a>
+        </span>
+    
+    
+      <span><a href="../schema/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

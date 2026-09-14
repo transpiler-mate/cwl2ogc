@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" /><meta name="author" content="Fabrice Brito, Simone Tripodi" /><link rel="canonical" href="https://eoap.github.io/cwl2ogc/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>CWL to OGC</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Introduction";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/cwl2ogc/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".">
+          <img src="imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Introduction</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-library">The library:</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parsing">Parsing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#serializing">Serializing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#json-schema">JSON Schema</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported conversions</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="essential-input-parameters/">Essential Input Parameters</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="array-inputs/">Array Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="inclusive-exclusive-inputs/">Inclusive and Exclusive Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="exclusive-input-parameters-expressions/">Exclusive Input Parameters with Expressions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph/">Document graph</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >More examples</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="complex-cwl-types/">Complex CWL types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="imported-cwl-types/">Imported CWL types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="string-formats/">String formats</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="schema/">JSON Schema generation</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="plugin/">Transpiler-Mate plugin</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="api/">API doc</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">CWL to OGC</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/transpiler-mate/cwl2ogc/edit/master/docs/index.md">Edit on transpiler-mate/cwl2ogc</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cwl-workflow-inputsoutputs-to-ogc-api-processes-inputsoutputs">CWL Workflow inputs/outputs to OGC API Processes inputs/outputs</h1>
+<div class="admonition warning">
+<p class="admonition-title">transpiler-mate plugin available since 0.20.0</p>
+<p>Since release <strong>0.20.0</strong>, <code>cwl2ogc</code> is also available as a
+<a href="https://transpiler-mate.github.io/transpiler-mate-api/">transpiler-mate</a> plugin.
+Use <code>transpiler-mate cwl2ogc</code> for command-line conversion; the standalone
+<code>cwl2ogc</code> command was removed in 0.18.0. The Python library remains available.
+Follow the <a href="plugin/">plugin guide</a> for installation, usage, and output details.</p>
+</div>
+<p>The OGC API - Processes Part 2: Deploy, Replace, Undeploy (DRU) specification enables the deployment of executable Application Packages, such as CWL workflows, as processing services. </p>
+<p>A key part of the deploy operation involves parsing the CWL document to generate an OGC-compliant process description, exposing the workflow’s inputs and outputs.</p>
+<p>The <strong>cwl2ogc</strong> Python library is a helper library to automate the conversion of CWL input/output definitions into OGC API - Processes input/output schemas.</p>
+<h2 id="the-library">The library:</h2>
+<ul>
+<li>
+<p>Parses a CWL Workflow document.</p>
+</li>
+<li>
+<p>Extracts and interprets its inputs and outputs.</p>
+</li>
+<li>
+<p>Converts them to the structure required for input and output definitions in OGC API - Processes (JSON Schema-like structure, including metadata such as title, description, schema, etc.).</p>
+</li>
+<li>
+<p>Supports common CWL types (File, Directory, string, int, float, arrays, optional types, custom types etc.) and map them to OGC API Process I/O types.</p>
+</li>
+<li>
+<p>Handles CWL input binding attributes (e.g., default values, required vs. optional) to enrich the process description.</p>
+</li>
+</ul>
+<p>Provides utilities to assist with:</p>
+<ul>
+<li>
+<p><code>GET /processes/{id}</code> (i.e. process description generation)</p>
+</li>
+<li>
+<p><code>POST /processes</code> (i.e. deployment flow)</p>
+</li>
+</ul>
+<p>This library may be useful for OGC API - Processes implementations that support deploying CWL Workflows as execution units, helping bridge the gap between CWL syntax and the standardized OGC process interface.Parsing</p>
+<h2 id="parsing">Parsing</h2>
+<p>Just instantiate a <code>cwl2ogc.BaseCWLtypes2OGCConverter</code> object, passing the parsed CWL using various availabe APIs:</p>
+<ul>
+<li><a href="https://github.com/common-workflow-language/cwl-utils">cwl-utils</a>;</li>
+<li><a href="https://github.com/common-workflow-language/cwltool">cwltool</a>;</li>
+<li><a href="https://terradue.github.io/cwl-loader/">cwl-loader</a>.</li>
+</ul>
+<h2 id="serializing">Serializing</h2>
+<p>Once the document is parsed, invoke the</p>
+<ul>
+<li><code>cwl2ogc.BaseCWLtypes2OGCConverter.dump_inputs</code>,</li>
+<li><code>cwl2ogc.BaseCWLtypes2OGCConverter.dump_outputs</code>.</li>
+</ul>
+<p>APIs to dump the CWL inputs/outputs to the target Stream (i.e. a file, the stdout, ...) in OGC JSON format.</p>
+<h2 id="json-schema">JSON Schema</h2>
+<p>Once the document is parsed, invoke the</p>
+<ul>
+<li><code>cwl2ogc.BaseCWLtypes2OGCConverter.dump_inputs_json_schema</code>,</li>
+<li><code>cwl2ogc.BaseCWLtypes2OGCConverter.dump_outputs_json_schema</code>.</li>
+</ul>
+<p>APIs to dump the CWL inputs/outputs to the target Stream (i.e. a file, the stdout, ...) in JSON Schema format, see the live <a href="./schema/">schema</a> sample to check how to validate inputs/outputs.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="essential-input-parameters/" class="btn btn-neutral float-right" title="Essential Input Parameters">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/transpiler-mate/cwl2ogc/" class="fa fa-code-fork" style="color: #fcfcfc"> transpiler-mate/cwl2ogc</a>
+        </span>
+    
+    
+    
+      <span><a href="essential-input-parameters/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-09-14 12:55:53.058507+00:00
+-->
