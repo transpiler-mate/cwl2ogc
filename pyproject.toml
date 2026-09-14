@@ -27,12 +27,16 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "cwl-utils==0.41",
+  "cwl-utils>=0.43",
   "loguru==0.7.3",
+  "transpiler-mate-api==1.0.0"
 ]
 
+[project.entry-points."transpiler_mate.plugins"]
+cwl2ogc = "cwl2ogc.plugin:cwl2ogc"
+
 [project.urls]
-Documentation = "https://github.com/eoap/cwl2ogc#readme"
+Documentation = "https://eoap.github.io/cwl2ogc/"
 Issues = "https://github.com/eoap/cwl2ogc/issues"
 Source = "https://github.com/eoap/cwl2ogc"
 
@@ -65,35 +69,74 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-
 [tool.hatch.envs.test]
-description = "Test environment"
 skip-install = false
-
 dependencies = [
-  "pytest==9.0.2",
-  "pytest-cov==7.0.0",
-  "pyyaml==6.0.3",
+  "pytest>=8.4,<10",
+  "pytest-cov>=6.2,<8",
 ]
 
-
 [tool.hatch.envs.test.scripts]
-test = "pytest"
-test-q = "pytest -q"
-test-cov = "pytest --cov=cwl2ogc"
+test = "pytest {args:tests}"
+testv = "pytest --verbose {args:tests}"
+test-cov = "pytest --cov=cwl2ogc --cov-report=term-missing {args:tests}"
 test-show-setup = "pytest --setup-show"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
+[tool.hatch.envs.default]
+skip-install = false
+
 [tool.hatch.envs.dev]
-description = "Development environment"
+skip-install = false
 dependencies = [
-  "pytest==9.0.2",
-  "ruff==0.14.6",
+  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
+  "mypy>=2.3.0",
+  "ruff>=0.16.0",
+  "bandit>=1.9.4",
 ]
 
+[tool.ruff.lint]
+# Start with the essential rules
+select = [
+  "F",    # Pyflakes (Critical for bugs)
+  "E",    # pycodestyle Errors
+  "W",    # pycodestyle Warnings
+  "I",    # isort (Import sorting)
+  "UP",   # pyupgrade (Modern syntax)
+  "B",    # flake8-bugbear (Common bugs)
+  "C4",   # flake8-comprehensions
+  "SIM",  # flake8-simplify
+  "FA",   # flake8-future-annotations
+  "TC",   # flake8-type-checking
+  "PTH",  # flake8-use-pathlib
+  "RET",  # flake8-return
+  "C90",  # McCabe Complexity (Enables C901)
+]
+
+# Ignore rules that conflict with the formatter (Ruff Format/Black)
+ignore = [
+  "E501", # Line too long (handled by formatter)
+  "W191", # Tab indentation (handled by formatter)
+  "E111", # Indentation issues (handled by formatter)
+  "E114", # Indentation issues (handled by formatter)
+  "E117", # Over-indented (handled by formatter)
+]
+
+[tool.ruff.lint.mccabe]
+# Flag errors (C901) whenever complexity exceeds 10 (default is 10)
+max-complexity = 10
 
 [tool.hatch.envs.dev.scripts]
-lint = "ruff format ."
-check = "ruff check --fix"
+typecheck = "mypy --install-types --non-interactive {args:src tests}"
+lint = "ruff format {args:src tests}"
+check = "ruff check --fix {args:src tests}"
+security = "bandit -r {args:src}"

@@ -6,3 +6,5 @@ __pycache__
 .task
 .venv
 docs/api
+.ruff_cache
+.mypy_cache

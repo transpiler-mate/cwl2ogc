@@ -71,11 +71,11 @@ extra_css:
   
 extra_javascript:
   - javascripts/config.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Introduction: index.md
+  - transpiler-mate plugin: plugin.md
   - Supported conversions:
     - essential-input-parameters.ipynb
     - array-inputs.ipynb
