@@ -1,10 +1,20 @@
 # cwl2ogc
 
+[![PyPI - Version](https://img.shields.io/pypi/v/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
+
 `cwl2ogc` converts CWL workflow/tool inputs and outputs into:
 - OGC API - Processes I/O descriptors
 - JSON Schema documents for those I/O definitions
 
 This is useful when publishing CWL-based application packages through OGC API - Processes interfaces.
+
+> [!WARNING]
+> Since release **0.20.0**, `cwl2ogc` is also available as a
+> [transpiler-mate](https://transpiler-mate.github.io/transpiler-mate-api/) plugin.
+> Use `transpiler-mate cwl2ogc` for command-line conversion; the standalone
+> `cwl2ogc` command was removed in 0.18.0. The Python library remains available.
+> See the [plugin guide](docs/plugin.md) for installation and usage.
 
 ## Why
 
@@ -18,21 +28,29 @@ pip install cwl2ogc
 
 Python `3.10+` is required.
 
-## Quick Start (CLI)
+## Quick Start (transpiler-mate plugin)
 
-Generate a process descriptor from a CWL document:
+Install the runtime and plugin in the same Python environment:
 
 ```bash
-cwl2ogc tests/artifacts/cwl-types/inp.cwl \
-  --workflow-id inp \
-  --output process.json
+pip install transpiler-mate-runtime "cwl2ogc>=0.20.0"
+```
+
+Generate OGC input/output descriptions from your CWL document:
+
+```bash
+transpiler-mate cwl2ogc --output processes.json workflow.cwl
 ```
 
 Show command help:
 
 ```bash
-cwl2ogc --help
+transpiler-mate cwl2ogc --help
 ```
+
+The output contains application metadata and a `processes` mapping keyed by
+CWL process ID. See the [plugin guide](docs/plugin.md) for source requirements
+and output details.
 
 ## Quick Start (Python API)
 
@@ -92,13 +110,29 @@ task lint
 
 Project docs: https://eoap.github.io/cwl2ogc/
 
-CLI docs: [docs/cli.md](docs/cli.md)
+Plugin and CLI docs: [docs/plugin.md](docs/plugin.md)
 
 ## Contributing
 
 Issues and pull requests are welcome:
 https://github.com/eoap/cwl2ogc/issues
 
+### Local quality checks
+
+Install [Hatch](https://hatch.pypa.io/) and [Taskfiles](https://taskfile.dev/docs/guide) then install the Git hook:
+
+```console
+task quality:pre-commit:install
+```
+
+Every commit runs Ruff (including the configured McCabe complexity limit),
+Ruff formatting, strict mypy checks, and the pytest suite.
+Run the complete hook explicitly with:
+
+```console
+task quality:pre-commit:run
+```
+
 ## License
 
-Apache-2.0. See [LICENSE](LICENSE).
+[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)

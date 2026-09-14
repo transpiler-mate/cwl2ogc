@@ -75,6 +75,7 @@ extra_javascript:
 
 nav:
   - Introduction: index.md
+  - transpiler-mate plugin: plugin.md
   - Supported conversions:
     - essential-input-parameters.ipynb
     - array-inputs.ipynb

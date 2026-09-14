@@ -16,12 +16,10 @@ import io
 import json
 from pathlib import Path
 
-import pytest
-import yaml
 from cwl_utils.parser import load_document_by_yaml
+from ruamel.yaml import YAML
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
-
 
 ARTIFACTS_DIR = Path("tests/artifacts")
 CWL_TYPES_DIR = ARTIFACTS_DIR / "cwl-types"
@@ -36,7 +34,7 @@ CWL_TYPES_FIXTURES = [
 
 def load_cwl_document(path: Path):
     with path.open() as stream:
-        cwl_content = yaml.load(stream, Loader=yaml.SafeLoader)
+        cwl_content = YAML().load(stream)
     return load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
 
 
@@ -45,8 +43,7 @@ def load_json(path: Path):
         return json.load(stream)
 
 
-@pytest.mark.parametrize("fixture_name", CWL_TYPES_FIXTURES)
-def test_conversion_matches_golden_files(fixture_name: str):
+def assert_conversion_matches_golden_files(fixture_name: str):
     workflow = load_cwl_document(CWL_TYPES_DIR / f"{fixture_name}.cwl")
     converter = BaseCWLtypes2OGCConverter(workflow)
 
@@ -74,6 +71,11 @@ def test_conversion_matches_golden_files(fixture_name: str):
 
     for value in actual_inputs.values():
         assert "metadata" in value
+
+
+def test_conversion_matches_golden_files():
+    for fixture_name in CWL_TYPES_FIXTURES:
+        assert_conversion_matches_golden_files(fixture_name)
 
 
 def test_workflow_graph_conversion_for_water_bodies():

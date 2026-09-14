@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Mapping, MutableMapping
+from types import UnionType
+from typing import (
+    Any,
+    TextIO,
+    Union,
+    get_args,
+    get_origin,
+)
+
 from cwl_utils.parser import (
-    cwl_v1_0,
-    cwl_v1_1,
-    cwl_v1_2,
     CommandInputParameter,
     CommandOutputParameter,
     Directory,
@@ -31,57 +39,47 @@ from cwl_utils.parser import (
     OutputParameter,
     OutputRecordSchema,
     Process,
+    cwl_v1_0,
+    cwl_v1_1,
+    cwl_v1_2,
 )
-
 from loguru import logger
-from typing import (
-    Any,
-    get_args,
-    get_origin,
-    List,
-    Mapping,
-    MutableMapping,
-    TextIO,
-    Union,
+
+__CommandInputEnumSchema__ = (
+    cwl_v1_0.CommandInputEnumSchema
+    | cwl_v1_1.CommandInputEnumSchema
+    | cwl_v1_2.CommandInputEnumSchema
 )
 
-import json
+__CommandOutputEnumSchema__ = (
+    cwl_v1_0.CommandOutputEnumSchema
+    | cwl_v1_1.CommandOutputEnumSchema
+    | cwl_v1_2.CommandOutputEnumSchema
+)
 
-__CommandInputEnumSchema__ = Union[
-    cwl_v1_0.CommandInputEnumSchema,
-    cwl_v1_1.CommandInputEnumSchema,
-    cwl_v1_2.CommandInputEnumSchema,
-]
+__CommandInputRecordSchema__ = (
+    cwl_v1_0.CommandInputRecordSchema
+    | cwl_v1_1.CommandInputRecordSchema
+    | cwl_v1_2.CommandInputRecordSchema
+)
 
-__CommandOutputEnumSchema__ = Union[
-    cwl_v1_0.CommandOutputEnumSchema,
-    cwl_v1_1.CommandOutputEnumSchema,
-    cwl_v1_2.CommandOutputEnumSchema,
-]
+__CommandInputArraySchema__ = (
+    cwl_v1_0.CommandInputArraySchema
+    | cwl_v1_1.CommandInputArraySchema
+    | cwl_v1_2.CommandInputArraySchema
+)
 
-__CommandInputRecordSchema__ = Union[
-    cwl_v1_0.CommandInputRecordSchema,
-    cwl_v1_1.CommandInputRecordSchema,
-    cwl_v1_2.CommandInputRecordSchema,
-]
+__CommandOutputArraySchema__ = (
+    cwl_v1_0.CommandOutputArraySchema
+    | cwl_v1_1.CommandOutputArraySchema
+    | cwl_v1_2.CommandOutputArraySchema
+)
 
-__CommandInputArraySchema__ = Union[
-    cwl_v1_0.CommandInputArraySchema,
-    cwl_v1_1.CommandInputArraySchema,
-    cwl_v1_2.CommandInputArraySchema,
-]
-
-__CommandOutputArraySchema__ = Union[
-    cwl_v1_0.CommandOutputArraySchema,
-    cwl_v1_1.CommandOutputArraySchema,
-    cwl_v1_2.CommandOutputArraySchema,
-]
-
-__CommandOutputRecordSchema__ = Union[
-    cwl_v1_0.CommandOutputRecordSchema,
-    cwl_v1_1.CommandOutputRecordSchema,
-    cwl_v1_2.CommandOutputRecordSchema,
-]
+__CommandOutputRecordSchema__ = (
+    cwl_v1_0.CommandOutputRecordSchema
+    | cwl_v1_1.CommandOutputRecordSchema
+    | cwl_v1_2.CommandOutputRecordSchema
+)
 
 __STRING_FORMAT_URL__ = (
     "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml"
@@ -100,7 +98,7 @@ __STRING_FORMATS__ = {
     "IRI": "iri",
     "IRIReference": "iri-reference",
     "JsonPointer": "json-pointer",
-    "Password": "password",
+    "Password": "password",  # nosec B105
     "RelativeJsonPointer": "relative-json-pointer",
     "UUID": "uuid",
     "URI": "uri",
@@ -164,9 +162,11 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
             `None`: none.
         """
         self.cwl = cwl
-        self._CWL_TYPES__ = {}
+        self._CWL_TYPES__: dict[Any, Callable[[Any], Mapping[str, Any]]] = {}
 
-        def _map_type(type_: Any, map_function: Any) -> None:
+        def _map_type(
+            type_: Any, map_function: Callable[[Any], Mapping[str, Any]]
+        ) -> None:
             if isinstance(type_, list):
                 for typ in type_:
                     _map_type(typ, map_function)
@@ -275,7 +275,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
     def _on_enum_internal(self, symbols: Any) -> Mapping[str, Any]:
         return {
             "type": "string",
-            "enum": list(map(lambda symbol: self._clean_name(symbol), symbols)),
+            "enum": [self._clean_name(symbol) for symbol in symbols],
         }
 
     def _on_enum_schema(self, input: Any) -> Mapping[str, Any]:
@@ -305,7 +305,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
 
     def _search_type_in_dictionary(self, expected: Any) -> Mapping[str, Any]:
         for requirement in getattr(self.cwl, "requirements", []):
-            if "SchemaDefRequirement" == requirement.class_:
+            if requirement.class_ == "SchemaDefRequirement":
                 for type in requirement.types:
                     if expected == type.name:
                         return self._on_input(type)
@@ -343,14 +343,9 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
     def _on_list(self, input) -> Mapping[str, Any]:
         input_list: MutableMapping[str, Any] = {"nullable": self._is_nullable(input)}
 
-        inputs_schema = list(
-            map(
-                lambda item: self._on_input(item),
-                filter(lambda current: "null" != current, input.type_),
-            )
-        )
+        inputs_schema = [self._on_input(item) for item in input.type_ if item != "null"]
 
-        if 1 == len(inputs_schema):
+        if len(inputs_schema) == 1:
             input_list.update(inputs_schema[0])
         else:
             input_list["anyOf"] = inputs_schema
@@ -359,7 +354,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
 
     # record
 
-    def _on_record_internal(self, record: Any, fields: List[Any]) -> Mapping[str, Any]:
+    def _on_record_internal(self, record: Any, fields: list[Any]) -> Mapping[str, Any]:
         record_name = ""
         if hasattr(record, "name"):
             record_name = record.name
@@ -394,7 +389,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         return self._on_record_internal(input, input.fields)
 
     def _type_to_string(self, typ: Any) -> str:
-        if get_origin(typ) is Union:
+        if get_origin(typ) in (Union, UnionType):
             return " or ".join(
                 [self._type_to_string(inner_type) for inner_type in get_args(typ)]
             )
@@ -417,10 +412,10 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         return typ.__name__
 
     def _to_ogc(self, params, is_input: bool = False) -> Mapping[str, Any]:
-        ogc_map = {}
+        ogc_map: dict[str, MutableMapping[str, Any]] = {}
 
         for param in params:
-            schema = {
+            schema: MutableMapping[str, Any] = {
                 "schema": self._on_input(param),
                 "metadata": [
                     {
@@ -468,7 +463,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
     ) -> Mapping[str, Any]:
         id = self.cwl.id.split("#")[-1]
 
-        schema = {
+        schema: MutableMapping[str, Any] = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": f"https://eoap.github.io/cwl2ogc/{id}/{label}.yaml",
             "description": f"The schema to represent a {id} {label} definition",
