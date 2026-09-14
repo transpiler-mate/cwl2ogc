@@ -42,6 +42,13 @@ plugins:
       execute: true
       show_input: True
       no_input: False
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
 
 markdown_extensions:
   - pymdownx.details
@@ -87,6 +94,6 @@ nav:
       - string-formats.ipynb
       - schema.ipynb
   - Transpiler-Mate plugin: plugin.md
-  - API doc: api/latest/cwl2ogc.md
+  - API doc: api.md
 
 copyright: <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a>

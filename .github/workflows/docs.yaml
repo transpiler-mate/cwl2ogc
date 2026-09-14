@@ -38,7 +38,5 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter jsonschema legacy-cgi pdocs cwl-loader
-      - run: pip install .
-      - run: pdocs as_markdown --output_dir ./docs/api/latest --exclude_source --overwrite cwl2ogc
+      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter jsonschema legacy-cgi cwl-loader mkdocstrings[python]
       - run: mkdocs gh-deploy --force
