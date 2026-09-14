@@ -75,18 +75,18 @@ extra_javascript:
 
 nav:
   - Introduction: index.md
-  - transpiler-mate plugin: plugin.md
   - Supported conversions:
     - essential-input-parameters.ipynb
     - array-inputs.ipynb
     - inclusive-exclusive-inputs.ipynb
     - exclusive-input-parameters-expressions.ipynb
     - graph.ipynb
-  - More examples:
-    - complex-cwl-types.ipynb
-    - imported-cwl-types.ipynb
-    - string-formats.ipynb
-  - schema.ipynb
+    - More examples:
+      - complex-cwl-types.ipynb
+      - imported-cwl-types.ipynb
+      - string-formats.ipynb
+      - schema.ipynb
+  - Transpiler-Mate plugin: plugin.md
   - API doc: api/latest/cwl2ogc.md
 
 copyright: <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a>
