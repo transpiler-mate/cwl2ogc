@@ -36,9 +36,9 @@ dependencies = [
 cwl2ogc = "cwl2ogc.plugin:cwl2ogc"
 
 [project.urls]
-Documentation = "https://eoap.github.io/cwl2ogc/"
-Issues = "https://github.com/eoap/cwl2ogc/issues"
-Source = "https://github.com/eoap/cwl2ogc"
+Documentation = "https://transpiler-mate.github.io/cwl2ogc/"
+Issues = "https://github.com/transpiler-mate/cwl2ogc/issues"
+Source = "https://github.com/transpiler-mate/cwl2ogc"
 
 [tool.hatch.version]
 path = "src/cwl2ogc/__about__.py"
