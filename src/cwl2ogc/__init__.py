@@ -304,7 +304,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         )
 
     def _search_type_in_dictionary(self, expected: Any) -> Mapping[str, Any]:
-        for requirement in getattr(self.cwl, "requirements", []):
+        for requirement in (getattr(self.cwl, "requirements", None) or []):
             if requirement.class_ == "SchemaDefRequirement":
                 for type in requirement.types:
                     if expected == type.name:
