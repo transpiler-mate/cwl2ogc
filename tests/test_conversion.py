@@ -16,7 +16,9 @@ import io
 import json
 from pathlib import Path
 
+import pytest
 from cwl_utils.parser import load_document_by_yaml
+from cwl_utils.parser.cwl_v1_2 import Workflow, WorkflowInputParameter
 from ruamel.yaml import YAML
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
@@ -123,3 +125,25 @@ def test_dump_methods_emit_valid_json():
     for stream in streams:
         data = json.loads(stream.getvalue())
         assert isinstance(data, dict)
+
+
+@pytest.mark.parametrize("requirements", [None, []])
+def test_custom_type_without_requirements_does_not_crash(requirements):
+    workflow = Workflow(
+        id="file:///tmp/workflow.cwl#main",
+        cwlVersion="v1.2",
+        inputs=[
+            WorkflowInputParameter(
+                id="file:///tmp/workflow.cwl#main/aoi",
+                type_="https://example.org/geojson.yaml#Polygon",
+            )
+        ],
+        outputs=[],
+        steps=[],
+        requirements=requirements,
+    )
+
+    schema = BaseCWLtypes2OGCConverter(workflow).get_inputs_json_schema()
+
+    assert "aoi" in schema["properties"]
+    assert schema["$defs"]["aoi"] == {}
