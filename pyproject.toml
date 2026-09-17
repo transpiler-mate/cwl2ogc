@@ -98,7 +98,7 @@ skip-install = false
 [tool.hatch.envs.dev]
 skip-install = false
 dependencies = [
-  "transpiler-mate-api @ git+https://github.com/sim13pods/transpiler-mate-api.git@main",
+  "transpiler-mate-api==1.0.0",
   "mypy>=2.3.0",
   "ruff>=0.16.0",
   "bandit>=1.9.4",
