@@ -53,5 +53,4 @@ tasks:
 
   default:
     cmds:
-    - task: quality:test
-    - task: quality:check
+    - task: quality:pre-commit:run
