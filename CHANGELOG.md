@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.22.0] - 2026-09-18
+
+### Changed
+
+- Produced output compliant to OGC API - Processes specification
+
 ## [0.21.0] - 2026-09-16
 
 ### Fixed
@@ -126,7 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the STAC Item public schema URL.
 - Fixed a Python `cgi` import issue, pdoc installation, import organization, f-string syntax, documentation links, and CI/package workflow issues.
 
-[unreleased]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.21.0...HEAD
+[unreleased]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.18.0...v0.19.0

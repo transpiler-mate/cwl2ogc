@@ -20,6 +20,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from cwl_utils.parser import Workflow
 from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field
 from transpiler_mate.api import (
@@ -50,18 +51,18 @@ class Cwl2OgcOptions(BaseModel):
 )
 def cwl2ogc(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
     """Serialize the resolved CWL document to ``options.output``."""
-    data = context.metadata.model_dump()
+    data: dict[str, Any]
+    metadata: dict[str, Any] = context.metadata.model_dump()
 
-    data["processes"] = {}
-
-    def _wf_ogc_data(process: Process):
+    def _wf_ogc_data(process: Process) -> dict[str, Any]:
         process_data: dict[str, Any] = {}
 
-        for attribute in ["class_", "label", "doc"]:
-            if hasattr(process, attribute):
-                attribute_value = getattr(process, attribute, None)
-                if attribute_value:
-                    process_data[attribute] = attribute_value
+        process_data["id"] = process.id
+        process_data["version"] = context.metadata.software_version
+        process_data["title"] = process.label
+        process_data["description"] = process.doc
+        process_data["metadata"] = [metadata]
+        process_data["jobControlOptions"] = "async-execute"
 
         try:
             cwl_converter = BaseCWLtypes2OGCConverter(process)
@@ -73,10 +74,14 @@ def cwl2ogc(context: TranspilerContext, options: Cwl2OgcOptions) -> None:
                 f"An unexpected error occurred while extracting schema from {process.id}: {error}"
             )
 
-        data["processes"][process.id] = process_data
+        return process_data
 
-    for workflow in context.processes:
-        _wf_ogc_data(workflow)
+    if context.process_id:
+        data = _wf_ogc_data(context.resolved_process)
+    else:
+        data = {}
+        for workflow in context.get_processes_by_type(Workflow):
+            data[workflow.id] = _wf_ogc_data(workflow)
 
     try:
         options.output.parent.mkdir(parents=True, exist_ok=True)
