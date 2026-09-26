@@ -33,7 +33,6 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "cwl-utils>=0.43",
   "loguru==0.7.3",
   "transpiler-mate-api>=1.0.0"
 ]
