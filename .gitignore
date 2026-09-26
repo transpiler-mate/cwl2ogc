@@ -9,3 +9,4 @@ docs/api
 .ruff_cache
 .mypy_cache
 uv.lock
+.cache
