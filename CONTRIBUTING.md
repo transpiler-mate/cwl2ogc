@@ -14,16 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# API reference
+# Contributing to CodeMeta Transpiler-Mate Plugin
 
-## Converter APIs
+## Development setup
 
-::: cwl2ogc
+```bash
+hatch shell
+task
+```
 
-## Plugin registration
+## Quality gate
 
-::: cwl2ogc.plugin.cwl2ogc
+Before opening a pull request, run:
 
-## Options
+```bash
+task
+```
 
-::: cwl2ogc.plugin.Cwl2OgcOptions
+## Documentation
+
+Documentation follows Diátaxis:
+
+- tutorials teach through guided learning;
+- how-to guides solve concrete tasks;
+- reference pages provide exact technical facts;
+- explanation pages discuss concepts and rationale.

@@ -2,6 +2,8 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/transpiler-mate/cwl2ogc/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/transpiler-mate/cwl2ogc/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/transpiler-mate/cwl2ogc/develop?logo=codecov)](https://app.codecov.io/gh/transpiler-mate/cwl2ogc/tree/develop)
 
 `cwl2ogc` converts CWL workflow/tool inputs and outputs into:
 - OGC API - Processes I/O descriptors

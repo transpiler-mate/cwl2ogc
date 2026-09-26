@@ -17,8 +17,8 @@ import json
 from pathlib import Path
 
 import pytest
-from cwl_utils.parser import load_document_by_yaml
-from cwl_utils.parser.cwl_v1_2 import Workflow, WorkflowInputParameter
+from cwl_utils.parser import Process, load_document_by_yaml
+from cwl_utils.parser.cwl_v1_2 import SchemaDefRequirement, Workflow, WorkflowInputParameter
 from ruamel.yaml import YAML
 
 from cwl2ogc import BaseCWLtypes2OGCConverter
@@ -34,19 +34,27 @@ CWL_TYPES_FIXTURES = [
 ]
 
 
-def load_cwl_document(path: Path):
+def load_cwl_document(path: Path) -> Process | list[Process]:
+    """Load a CWL process or graph from a fixture."""
     with path.open() as stream:
         cwl_content = YAML().load(stream)
-    return load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
+    document = load_document_by_yaml(yaml=cwl_content, uri="io://", load_all=True)
+    assert isinstance(document, (Process, list))
+    return document
 
 
-def load_json(path: Path):
+def load_json(path: Path) -> dict[str, dict[str, object]]:
+    """Load an OGC parameter description fixture."""
     with path.open() as stream:
-        return json.load(stream)
+        document = json.load(stream)
+    assert isinstance(document, dict)
+    return document
 
 
-def assert_conversion_matches_golden_files(fixture_name: str):
+def assert_conversion_matches_golden_files(fixture_name: str) -> None:
+    """Check parameter names, metadata, and schema presence against fixtures."""
     workflow = load_cwl_document(CWL_TYPES_DIR / f"{fixture_name}.cwl")
+    assert isinstance(workflow, Process)
     converter = BaseCWLtypes2OGCConverter(workflow)
 
     expected_inputs = load_json(CWL_TYPES_DIR / f"{fixture_name}_inputs.json")
@@ -75,18 +83,16 @@ def assert_conversion_matches_golden_files(fixture_name: str):
         assert "metadata" in value
 
 
-def test_conversion_matches_golden_files():
+def test_conversion_matches_golden_files() -> None:
     for fixture_name in CWL_TYPES_FIXTURES:
         assert_conversion_matches_golden_files(fixture_name)
 
 
-def test_workflow_graph_conversion_for_water_bodies():
+def test_workflow_graph_conversion_for_water_bodies() -> None:
     cwl_graph = load_cwl_document(ARTIFACTS_DIR / "app-water-body.1.1.0.cwl")
     assert isinstance(cwl_graph, list)
 
-    workflow = next(
-        entry for entry in cwl_graph if getattr(entry, "class_", None) == "Workflow"
-    )
+    workflow = next(entry for entry in cwl_graph if getattr(entry, "class_", None) == "Workflow")
     converter = BaseCWLtypes2OGCConverter(workflow)
 
     inputs = converter.get_inputs()
@@ -98,8 +104,9 @@ def test_workflow_graph_conversion_for_water_bodies():
     assert outputs["stac_catalog"]["schema"]["oneOf"]
 
 
-def test_json_schema_generation_for_nullable_inputs():
+def test_json_schema_generation_for_nullable_inputs() -> None:
     workflow = load_cwl_document(CWL_TYPES_DIR / "inp.cwl")
+    assert isinstance(workflow, Process)
     converter = BaseCWLtypes2OGCConverter(workflow)
 
     inputs_schema = converter.get_inputs_json_schema()
@@ -112,8 +119,9 @@ def test_json_schema_generation_for_nullable_inputs():
     assert outputs_schema["type"] == "object"
 
 
-def test_dump_methods_emit_valid_json():
+def test_dump_methods_emit_valid_json() -> None:
     workflow = load_cwl_document(CWL_TYPES_DIR / "record.cwl")
+    assert isinstance(workflow, Process)
     converter = BaseCWLtypes2OGCConverter(workflow)
 
     streams = [io.StringIO(), io.StringIO(), io.StringIO(), io.StringIO()]
@@ -128,7 +136,9 @@ def test_dump_methods_emit_valid_json():
 
 
 @pytest.mark.parametrize("requirements", [None, []])
-def test_custom_type_without_requirements_does_not_crash(requirements):
+def test_custom_type_without_requirements_does_not_crash(
+    requirements: list[SchemaDefRequirement] | None,
+) -> None:
     workflow = Workflow(
         id="file:///tmp/workflow.cwl#main",
         cwlVersion="v1.2",
