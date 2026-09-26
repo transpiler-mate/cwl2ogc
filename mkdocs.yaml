@@ -13,7 +13,7 @@
 # limitations under the License.
 
 site_name: CWL to OGC
-site_url: https://eoap.github.io/cwl2ogc/
+site_url: https://transpiler-mate.github.io/cwl2ogc/
 site_author: Fabrice Brito, Simone Tripodi
 repo_url: https://github.com/transpiler-mate/cwl2ogc/
 repo_name: transpiler-mate/cwl2ogc
@@ -81,19 +81,26 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
-  - Introduction: index.md
-  - Supported conversions:
-    - essential-input-parameters.ipynb
-    - array-inputs.ipynb
-    - inclusive-exclusive-inputs.ipynb
-    - exclusive-input-parameters-expressions.ipynb
-    - graph.ipynb
-    - More examples:
-      - complex-cwl-types.ipynb
-      - imported-cwl-types.ipynb
-      - string-formats.ipynb
-      - schema.ipynb
-  - Transpiler-Mate plugin: plugin.md
-  - API doc: api.md
+  - Home: index.md
+  - Tutorials:
+    - Overview: tutorials/index.md
+    - Your first conversion: tutorials/first-conversion.md
+    - Essential input parameters: essential-input-parameters.ipynb
+    - Array inputs: array-inputs.ipynb
+    - Records and unions: inclusive-exclusive-inputs.ipynb
+    - Exclusive parameters with expressions: exclusive-input-parameters-expressions.ipynb
+    - Document graphs: graph.ipynb
+    - Complex CWL types: complex-cwl-types.ipynb
+    - Imported CWL types: imported-cwl-types.ipynb
+    - String formats: string-formats.ipynb
+    - JSON Schema validation: schema.ipynb
+  - How-to guides:
+    - Convert with the plugin: plugin.md
+    - Generate and validate JSON Schema: how-to/json-schema.md
+  - Reference:
+    - Python API: api.md
+    - Plugin CLI and output: reference/plugin.md
+  - Explanation:
+    - Conversion model: explanation/conversion-model.md
 
 copyright: <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a>
