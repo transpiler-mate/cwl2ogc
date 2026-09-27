@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Fabrice Brito, Simone Tripodi" /><link rel="canonical" href="https://transpiler-mate.github.io/cwl2ogc/tutorials/first-conversion/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Your first conversion - CWL to OGC</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Your first conversion";
+        var mkdocs_page_input_path = "tutorials/first-conversion.md";
+        var mkdocs_page_url = "/cwl2ogc/tutorials/first-conversion/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../..">
+          <img src="../../imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Your first conversion</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-install-the-library">1. Install the library</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-create-a-workflow">2. Create a workflow</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-convert-its-inputs">3. Convert its inputs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-generate-a-json-schema">4. Generate a JSON Schema</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../essential-input-parameters/">Essential Input Parameters</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../array-inputs/">Array Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../inclusive-exclusive-inputs/">Inclusive and Exclusive Inputs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../exclusive-input-parameters-expressions/">Exclusive Input Parameters with Expressions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../graph/">Document graph</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../complex-cwl-types/">Complex CWL types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../imported-cwl-types/">Imported CWL types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../string-formats/">String formats</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../schema/">JSON Schema generation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../plugin/">Convert with the plugin</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/json-schema/">Generate and validate JSON Schema</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/plugin/">Plugin CLI and output</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/conversion-model/">Conversion model</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">CWL to OGC</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Your first conversion</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/transpiler-mate/cwl2ogc/edit/master/docs/tutorials/first-conversion.md">Edit on transpiler-mate/cwl2ogc</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="convert-your-first-workflow">Convert your first workflow</h1>
+<p>In this tutorial, you will convert a small CWL workflow into an OGC input
+description and a JSON Schema. You need Python 3.10 or later and a terminal.</p>
+<h2 id="1-install-the-library">1. Install the library</h2>
+<p>Create a virtual environment and install cwl2ogc:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1">python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</span><span id="__span-0-2"><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</span><span id="__span-0-3">python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>cwl2ogc
+</span></code></pre></div>
+<p>On Windows, activate the environment with <code>.venv\Scripts\activate</code>.</p>
+<h2 id="2-create-a-workflow">2. Create a workflow</h2>
+<p>Save this as <code>hello.cwl</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><span class="nt">cwlVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.2</span>
+</span><span id="__span-1-2"><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Workflow</span>
+</span><span id="__span-1-3"><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span>
+</span><span id="__span-1-4"><span class="nt">inputs</span><span class="p">:</span>
+</span><span id="__span-1-5"><span class="w">  </span><span class="nt">message</span><span class="p">:</span>
+</span><span id="__span-1-6"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+</span><span id="__span-1-7"><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Message</span>
+</span><span id="__span-1-8"><span class="w">    </span><span class="nt">doc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Text to pass through the workflow.</span>
+</span><span id="__span-1-9"><span class="nt">outputs</span><span class="p">:</span>
+</span><span id="__span-1-10"><span class="w">  </span><span class="nt">result</span><span class="p">:</span>
+</span><span id="__span-1-11"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+</span><span id="__span-1-12"><span class="w">    </span><span class="nt">outputSource</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">message</span>
+</span><span id="__span-1-13"><span class="nt">steps</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</span></code></pre></div>
+<p>The workflow passes one required string input directly to its output.</p>
+<h2 id="3-convert-its-inputs">3. Convert its inputs</h2>
+<p>Save the following as <code>convert.py</code> in the same directory:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span id="__span-2-2">
+</span><span id="__span-2-3"><span class="kn">from</span><span class="w"> </span><span class="nn">cwl_utils.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_document_by_uri</span>
+</span><span id="__span-2-4">
+</span><span id="__span-2-5"><span class="kn">from</span><span class="w"> </span><span class="nn">cwl2ogc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCWLtypes2OGCConverter</span>
+</span><span id="__span-2-6">
+</span><span id="__span-2-7"><span class="n">workflow</span> <span class="o">=</span> <span class="n">load_document_by_uri</span><span class="p">(</span><span class="s2">"hello.cwl"</span><span class="p">)</span>
+</span><span id="__span-2-8"><span class="n">converter</span> <span class="o">=</span> <span class="n">BaseCWLtypes2OGCConverter</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
+</span><span id="__span-2-9">
+</span><span id="__span-2-10"><span class="n">inputs</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">()</span>
+</span><span id="__span-2-11"><span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</span><span id="__span-2-12">
+</span><span id="__span-2-13"><span class="k">assert</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">"message"</span><span class="p">][</span><span class="s2">"schema"</span><span class="p">]</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">}</span>
+</span><span id="__span-2-14"><span class="k">assert</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">"message"</span><span class="p">][</span><span class="s2">"minOccurs"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span id="__span-2-15"><span class="k">assert</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">"message"</span><span class="p">][</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"Message"</span>
+</span><span id="__span-2-16">
+</span><span id="__span-2-17"><span class="n">outputs</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">get_outputs</span><span class="p">()</span>
+</span><span id="__span-2-18"><span class="k">assert</span> <span class="n">outputs</span><span class="p">[</span><span class="s2">"result"</span><span class="p">][</span><span class="s2">"schema"</span><span class="p">]</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">}</span>
+</span></code></pre></div>
+<p>Run it:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1">python<span class="w"> </span>convert.py
+</span></code></pre></div>
+<p>The printed description includes a <code>message</code> entry with a string schema,
+the title <code>Message</code>, and <code>minOccurs: 1</code>. The assertions verify that the
+conversion produced the expected input and output types.</p>
+<h2 id="4-generate-a-json-schema">4. Generate a JSON Schema</h2>
+<p>Append this to <code>convert.py</code> and run it again:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><span class="n">schema</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">get_inputs_json_schema</span><span class="p">()</span>
+</span><span id="__span-4-2"><span class="k">assert</span> <span class="n">schema</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"object"</span>
+</span><span id="__span-4-3"><span class="k">assert</span> <span class="n">schema</span><span class="p">[</span><span class="s2">"required"</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">"message"</span><span class="p">]</span>
+</span><span id="__span-4-4"><span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</span></code></pre></div>
+<p>This schema describes an object such as <code>{"message": "Hello"}</code>.
+The <code>required</code> array records that the message must be supplied.</p>
+<p>You have now converted both sides of a workflow and generated an input schema.
+Continue with the <a href="../">notebook tutorials</a>, or follow the
+<a href="../../how-to/json-schema/">how-to guide</a> to save and validate schemas.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../essential-input-parameters/" class="btn btn-neutral float-right" title="Essential Input Parameters">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/transpiler-mate/cwl2ogc/" class="fa fa-code-fork" style="color: #fcfcfc"> transpiler-mate/cwl2ogc</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../essential-input-parameters/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
