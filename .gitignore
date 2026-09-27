@@ -10,3 +10,4 @@ docs/api
 .mypy_cache
 uv.lock
 .cache
+dist/
