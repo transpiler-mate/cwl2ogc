@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Convert CWL parameter definitions to OGC descriptions and JSON Schema."""
+
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Mapping, MutableMapping
+from collections.abc import Callable, Mapping, MutableMapping, Sequence
 from types import UnionType
 from typing import (
     Any,
@@ -29,6 +31,7 @@ from cwl_utils.parser import (
     CommandOutputParameter,
     Directory,
     EnumSchema,
+    ExpressionToolOutputParameter,
     File,
     InputArraySchema,
     InputEnumSchema,
@@ -39,6 +42,8 @@ from cwl_utils.parser import (
     OutputParameter,
     OutputRecordSchema,
     Process,
+    WorkflowInputParameter,
+    WorkflowOutputParameter,
     cwl_v1_0,
     cwl_v1_1,
     cwl_v1_2,
@@ -81,9 +86,7 @@ __CommandOutputRecordSchema__ = (
     | cwl_v1_2.CommandOutputRecordSchema
 )
 
-__STRING_FORMAT_URL__ = (
-    "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml"
-)
+__STRING_FORMAT_URL__ = "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml"
 
 __STRING_FORMATS__ = {
     "Date": "date",
@@ -151,22 +154,16 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
     A helper class to automate the conversion of CWL input/output definitions into OGC API - Processes and JSON Schemas.
     """
 
-    def __init__(self, cwl: Process):
-        """
-        Initializes the converter, given the CWL document where extracting informations from.
+    def __init__(self, cwl: Process) -> None:
+        """Initialize the converter with a parsed CWL process.
 
         Args:
-            `cwl` (`Process`): The CWL document object model
-
-        Returns:
-            `None`: none.
+            cwl: Process whose input and output definitions will be converted.
         """
         self.cwl = cwl
         self._CWL_TYPES__: dict[Any, Callable[[Any], Mapping[str, Any]]] = {}
 
-        def _map_type(
-            type_: Any, map_function: Callable[[Any], Mapping[str, Any]]
-        ) -> None:
+        def _map_type(type_: Any, map_function: Callable[[Any], Mapping[str, Any]]) -> None:
             if isinstance(type_, list):
                 for typ in type_:
                     _map_type(typ, map_function)
@@ -188,9 +185,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
             lambda input: {
                 "oneOf": [
                     {"type": "string", "format": "uri"},
-                    {
-                        "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json"
-                    },
+                    {"$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json"},
                 ]
             },
         )
@@ -199,9 +194,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
             lambda input: {
                 "oneOf": [
                     {"type": "string", "format": "uri"},
-                    {
-                        "$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json"
-                    },
+                    {"$ref": "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json"},
                     {
                         "$ref": "https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json"
                     },
@@ -264,11 +257,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         return name[name.rfind("/") + 1 :]
 
     def _is_nullable(self, input: Any) -> bool:
-        return (
-            hasattr(input, "type_")
-            and isinstance(input.type_, list)
-            and "null" in input.type_
-        )
+        return hasattr(input, "type_") and isinstance(input.type_, list) and "null" in input.type_
 
     # enum
 
@@ -297,11 +286,9 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         logger.warning(f"input_parameter not supported yet: {input}")
         return {}
 
-    def _warn_unsupported_type(self, typ: Any):
+    def _warn_unsupported_type(self, typ: object) -> None:
         supported_types = "\n * ".join([str(k) for k in list(self._CWL_TYPES__.keys())])
-        logger.warning(
-            f"{typ} not supported yet, currently supporting only:\n * {supported_types}"
-        )
+        logger.warning(f"{typ} not supported yet, currently supporting only:\n * {supported_types}")
 
     def _search_type_in_dictionary(self, expected: Any) -> Mapping[str, Any]:
         for requirement in getattr(self.cwl, "requirements", None) or []:
@@ -314,36 +301,52 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         return {}
 
     def _on_input(self, input: Any) -> Mapping[str, Any]:
-        type: MutableMapping[str, Any] = {}
-
-        if isinstance(input, str):
-            if input in self._CWL_TYPES__:
-                type.update(self._CWL_TYPES__[input](input))
-            else:
-                type.update(self._search_type_in_dictionary(input))
-        elif hasattr(input, "type_"):
-            if isinstance(input.type_, str):
-                if input.type_ in self._CWL_TYPES__:
-                    type.update(self._CWL_TYPES__[input.type_](input))
-                else:
-                    type.update(self._search_type_in_dictionary(input.type_))
-            elif input.type_.__class__ in self._CWL_TYPES__:
-                type.update(self._CWL_TYPES__[input.type_.__class__](input))
-            else:
-                self._warn_unsupported_type(input.type_)
-        else:
-            logger.warning(f"I still don't know what to do for {input}")
-
+        """Convert a CWL type or parameter, preserving its declared default."""
+        schema = dict(self._convert_input_type(input))
         default_value = getattr(input, "default", None)
         if default_value:
-            type["default"] = default_value
+            schema["default"] = default_value
+        return schema
 
-        return type
+    def _convert_input_type(self, parameter: object) -> Mapping[str, Any]:
+        """Resolve primitive, named, and structured CWL types to schemas."""
+        cwl_type: object
+        if isinstance(parameter, str):
+            cwl_type = parameter
+        elif hasattr(parameter, "type_"):
+            cwl_type = parameter.type_
+        else:
+            logger.warning(f"I still don't know what to do for {parameter}")
+            return {}
 
-    def _on_list(self, input) -> Mapping[str, Any]:
+        lookup_key = cwl_type if isinstance(cwl_type, str) else cwl_type.__class__
+        converter = self._CWL_TYPES__.get(lookup_key)
+        if converter is not None:
+            return converter(parameter)
+        if isinstance(cwl_type, str):
+            return self._search_type_in_dictionary(cwl_type)
+        self._warn_unsupported_type(cwl_type)
+        return {}
+
+    def _on_list(
+        self,
+        input: WorkflowInputParameter
+        | WorkflowOutputParameter
+        | CommandInputParameter
+        | CommandOutputParameter
+        | ExpressionToolOutputParameter,
+    ) -> Mapping[str, Any]:
+        """Convert a CWL union and retain its nullability.
+
+        Raises:
+            TypeError: If the parameter does not declare a list of alternatives.
+        """
         input_list: MutableMapping[str, Any] = {"nullable": self._is_nullable(input)}
 
-        inputs_schema = [self._on_input(item) for item in input.type_ if item != "null"]
+        alternatives = input.type_
+        if not isinstance(alternatives, list):
+            raise TypeError("A CWL union must declare a list of alternatives")
+        inputs_schema = [self._on_input(item) for item in alternatives if item != "null"]
 
         if len(inputs_schema) == 1:
             input_list.update(inputs_schema[0])
@@ -361,9 +364,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         elif hasattr(record, "id"):
             record_name = record.id
         else:
-            logger.warning(
-                f"Impossible to detect {record.__dict__}, skipping name check..."
-            )
+            logger.warning(f"Impossible to detect {record.__dict__}, skipping name check...")
 
         if __STRING_FORMAT_URL__ in record_name:
             return {
@@ -371,16 +372,17 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
                 "format": __STRING_FORMATS__.get(record.name.split("#")[-1]),
             }
 
-        record = {"type": "object", "properties": {}, "required": []}
+        properties = {}
+        required = []
 
         for field in fields:
             field_id = self._clean_name(field.name)
-            record["properties"][field_id] = self._on_input(field)
+            properties[field_id] = self._on_input(field)
 
             if not self._is_nullable(field):
-                record["required"].append(field_id)
+                required.append(field_id)
 
-        return record
+        return {"type": "object", "properties": properties, "required": required}
 
     def _on_record_schema(self, input: Any) -> Mapping[str, Any]:
         return self._on_record_internal(input, input.type_.fields)
@@ -389,10 +391,9 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         return self._on_record_internal(input, input.fields)
 
     def _type_to_string(self, typ: Any) -> str:
+        """Describe a CWL type for OGC metadata."""
         if get_origin(typ) in (Union, UnionType):
-            return " or ".join(
-                [self._type_to_string(inner_type) for inner_type in get_args(typ)]
-            )
+            return " or ".join([self._type_to_string(inner_type) for inner_type in get_args(typ)])
 
         if isinstance(typ, list):
             return f"[ {', '.join([self._type_to_string(t) for t in typ])} ]"
@@ -406,12 +407,20 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         if hasattr(typ, "type_"):
             return self._type_to_string(typ.type_)
 
-        if isinstance(typ, str):
-            return typ
+        return typ if isinstance(typ, str) else str(typ.__name__)
 
-        return typ.__name__
-
-    def _to_ogc(self, params, is_input: bool = False) -> Mapping[str, Any]:
+    def _to_ogc(
+        self,
+        params: Sequence[
+            WorkflowInputParameter
+            | WorkflowOutputParameter
+            | CommandInputParameter
+            | CommandOutputParameter
+            | ExpressionToolOutputParameter
+        ],
+        is_input: bool = False,
+    ) -> Mapping[str, Any]:
+        """Convert CWL parameters to OGC descriptions with input occurrence constraints."""
         ogc_map: dict[str, MutableMapping[str, Any]] = {}
 
         for param in params:
@@ -458,9 +467,7 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         """
         return self._to_ogc(params=self.cwl.outputs)
 
-    def _to_json_schema(
-        self, parameters: Mapping[str, Any], label: str
-    ) -> Mapping[str, Any]:
+    def _to_json_schema(self, parameters: Mapping[str, Any], label: str) -> Mapping[str, Any]:
         id = self.cwl.id.split("#")[-1]
 
         schema: MutableMapping[str, Any] = {
@@ -503,60 +510,42 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         """
         return self._to_json_schema(self.get_outputs(), "outputs")
 
-    def _dump(self, data: Mapping[str, Any], stream: TextIO, pretty_print: bool):
+    def _dump(self, data: Mapping[str, Any], stream: TextIO, pretty_print: bool) -> None:
         json.dump(data, stream, indent=2 if pretty_print else None)
 
-    def dump_inputs(self, stream: TextIO, pretty_print: bool = False):
-        """
-        Dumps the OGC API - Processes inputs schema to its JSON representation.
+    def dump_inputs(self, stream: TextIO, pretty_print: bool = False) -> None:
+        """Dump the OGC API - Processes inputs schema to its JSON representation.
 
         Args:
-            `stream` (`TextIO`): The stream where serializing the JSON representation
-            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
-
-        Returns:
-            `None`: none.
+            stream: Text stream to receive the JSON representation.
+            pretty_print: Whether to indent the JSON output.
         """
         self._dump(data=self.get_inputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_outputs(self, stream: TextIO, pretty_print: bool = False):
-        """
-        Dumps the OGC API - Processes outputs schema to its JSON representation.
+    def dump_outputs(self, stream: TextIO, pretty_print: bool = False) -> None:
+        """Dump the OGC API - Processes outputs schema to its JSON representation.
 
         Args:
-            `stream` (`TextIO`): The stream where serializing the JSON representation
-            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
-
-        Returns:
-            `None`: none.
+            stream: Text stream to receive the JSON representation.
+            pretty_print: Whether to indent the JSON output.
         """
         self._dump(data=self.get_outputs(), stream=stream, pretty_print=pretty_print)
 
-    def dump_inputs_json_schema(self, stream: TextIO, pretty_print: bool = False):
-        """
-        Dumps the inputs JSON Schema to its JSON representation.
+    def dump_inputs_json_schema(self, stream: TextIO, pretty_print: bool = False) -> None:
+        """Dump the inputs JSON Schema to its JSON representation.
 
         Args:
-            `stream` (`TextIO`): The stream where serializing the JSON representation
-            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
-
-        Returns:
-            `None`: none.
+            stream: Text stream to receive the JSON representation.
+            pretty_print: Whether to indent the JSON output.
         """
-        self._dump(
-            data=self.get_inputs_json_schema(), stream=stream, pretty_print=pretty_print
-        )
+        self._dump(data=self.get_inputs_json_schema(), stream=stream, pretty_print=pretty_print)
 
-    def dump_outputs_json_schema(self, stream: TextIO, pretty_print: bool = False):
-        """
-        Dumps the outputs JSON Schema to its JSON representation.
+    def dump_outputs_json_schema(self, stream: TextIO, pretty_print: bool = False) -> None:
+        """Dump the outputs JSON Schema to its JSON representation.
 
         Args:
-            `stream` (`TextIO`): The stream where serializing the JSON representation
-            `pretty_print` (`bool`): formats the output if `True`, in a single line otherwise. Default is `False`
-
-        Returns:
-            `None`: none.
+            stream: Text stream to receive the JSON representation.
+            pretty_print: Whether to indent the JSON output.
         """
         self._dump(
             data=self.get_outputs_json_schema(),

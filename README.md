@@ -2,6 +2,8 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cwl2ogc.svg)](https://pypi.org/project/cwl2ogc)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/transpiler-mate/cwl2ogc/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/transpiler-mate/cwl2ogc/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/transpiler-mate/cwl2ogc/develop?logo=codecov)](https://app.codecov.io/gh/transpiler-mate/cwl2ogc/tree/develop)
 
 `cwl2ogc` converts CWL workflow/tool inputs and outputs into:
 - OGC API - Processes I/O descriptors
@@ -48,8 +50,8 @@ Show command help:
 transpiler-mate cwl2ogc --help
 ```
 
-The output contains application metadata and a `processes` mapping keyed by
-CWL process ID. See the [plugin guide](docs/plugin.md) for source requirements
+The output maps workflow IDs to process descriptions, each containing application
+metadata. Selecting a process with a source fragment produces one description. See the [plugin guide](docs/plugin.md) for source requirements
 and output details.
 
 ## Quick Start (Python API)
@@ -93,24 +95,21 @@ Open [http://127.0.0.1](http://127.0.0.1).
 Install development tooling with Hatch and run checks:
 
 ```bash
-hatch run test:test-q
+hatch run test:test
 hatch run dev:check
 hatch run dev:lint
 ```
 
-Equivalent Taskfile targets:
-
-```bash
-task test
-task check
-task lint
-```
-
 ## Documentation
 
-Project docs: https://transpiler-mate.github.io/cwl2ogc//
+[Project documentation](https://transpiler-mate.github.io/cwl2ogc/) is organized
+around four needs:
 
-Plugin and CLI docs: [docs/plugin.md](docs/plugin.md)
+- [Tutorials](docs/tutorials/index.md): learn through a first conversion and notebooks.
+- How-to guides: [use the plugin](docs/plugin.md) or
+  [generate JSON Schema](docs/how-to/json-schema.md).
+- Reference: [Python API](docs/api.md) and [plugin output](docs/reference/plugin.md).
+- [Explanation](docs/explanation/conversion-model.md): understand the conversion model.
 
 ## Contributing
 
