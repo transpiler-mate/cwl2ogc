@@ -305,7 +305,15 @@ class BaseCWLtypes2OGCConverter(__CWLtypes2OGCConverter__):
         schema = dict(self._convert_input_type(input))
         default_value = getattr(input, "default", None)
         if default_value:
-            schema["default"] = default_value
+            if (
+                "format" in schema
+                and schema["format"] in __STRING_FORMATS__.values()
+                and isinstance(default_value, dict)
+                and "value" in default_value
+            ):
+                schema["default"] = default_value["value"]
+            else:
+                schema["default"] = default_value
         return schema
 
     def _convert_input_type(self, parameter: object) -> Mapping[str, Any]:

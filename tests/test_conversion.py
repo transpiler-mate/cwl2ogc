@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 import pytest
-from cwl_utils.parser import Process, load_document_by_yaml
+from cwl_utils.parser import LoadingOptions, Process, load_document_by_yaml
 from cwl_utils.parser.cwl_v1_2 import SchemaDefRequirement, Workflow, WorkflowInputParameter
 from ruamel.yaml import YAML
 
@@ -157,3 +157,100 @@ def test_custom_type_without_requirements_does_not_crash(
 
     assert "aoi" in schema["properties"]
     assert schema["$defs"]["aoi"] == {}
+
+
+@pytest.mark.parametrize(
+    ("type_name", "expected_format"),
+    [
+        ("Date", "date"),
+        ("DateTime", "date-time"),
+        ("Duration", "duration"),
+        ("Email", "email"),
+        ("Hostname", "hostname"),
+        ("IDNEmail", "idn-email"),
+        ("IDNHostname", "idn-hostname"),
+        ("IPv4", "ipv4"),
+        ("IPv6", "ipv6"),
+        ("IRI", "iri"),
+        ("IRIReference", "iri-reference"),
+        ("JsonPointer", "json-pointer"),
+        ("Password", "password"),
+        ("RelativeJsonPointer", "relative-json-pointer"),
+        ("UUID", "uuid"),
+        ("URI", "uri"),
+        ("URIReference", "uri-reference"),
+        ("URITemplate", "uri-template"),
+        ("Time", "time"),
+    ],
+)
+@pytest.mark.parametrize("default_value", ["default-value", ""])
+def test_string_format_record_default_is_unwrapped(
+    type_name: str, expected_format: str, default_value: str
+) -> None:
+    type_uri = f"https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#{type_name}"
+    # Inline the referenced record definition to keep parsing independent of network access.
+    document = load_document_by_yaml(
+        yaml={
+            "cwlVersion": "v1.2",
+            "class": "Workflow",
+            "id": "file:///tmp/string-format-default.cwl#main",
+            "requirements": {
+                "SchemaDefRequirement": {
+                    "types": [
+                        {
+                            "name": type_uri,
+                            "type": "record",
+                            "fields": [{"name": "value", "type": "string"}],
+                        }
+                    ]
+                }
+            },
+            "inputs": {"formatted": {"type": type_uri, "default": {"value": default_value}}},
+            "outputs": [],
+            "steps": [],
+        },
+        uri="file:///tmp/string-format-default.cwl",
+        loadingOptions=LoadingOptions(no_link_check=True),
+    )
+    assert isinstance(document, Process)
+    converter = BaseCWLtypes2OGCConverter(document)
+    expected_schema = {"type": "string", "format": expected_format, "default": default_value}
+
+    assert converter.get_inputs()["formatted"]["schema"] == expected_schema
+    assert converter.get_inputs_json_schema()["$defs"]["formatted"] == expected_schema
+    assert document.inputs[0].default == {"value": default_value}
+
+
+def test_ordinary_record_default_remains_an_object() -> None:
+    document = load_document_by_yaml(
+        yaml={
+            "cwlVersion": "v1.2",
+            "class": "Workflow",
+            "id": "file:///tmp/ordinary-record-default.cwl#main",
+            "inputs": {
+                "record": {
+                    "type": {
+                        "type": "record",
+                        "name": "OrdinaryRecord",
+                        "fields": [{"name": "value", "type": "string"}],
+                    },
+                    "default": {"value": "default-value"},
+                }
+            },
+            "outputs": [],
+            "steps": [],
+        },
+        uri="file:///tmp/ordinary-record-default.cwl",
+        loadingOptions=LoadingOptions(no_link_check=True),
+    )
+    assert isinstance(document, Process)
+    converter = BaseCWLtypes2OGCConverter(document)
+    expected_schema = {
+        "type": "object",
+        "properties": {"value": {"type": "string"}},
+        "required": ["value"],
+        "default": {"value": "default-value"},
+    }
+
+    assert converter.get_inputs()["record"]["schema"] == expected_schema
+    assert converter.get_inputs_json_schema()["$defs"]["record"] == expected_schema
