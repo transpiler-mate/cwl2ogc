@@ -7,17 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
+## [0.22.2] - 2026-10-01
 
 ### Fixed
 
-### Security
+- `default` value for _string format_ is a `string` and not an `object`.
 
 ## [0.22.1] - 2026-09-27
 
@@ -138,7 +132,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the STAC Item public schema URL.
 - Fixed a Python `cgi` import issue, pdoc installation, import organization, f-string syntax, documentation links, and CI/package workflow issues.
 
-[unreleased]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.22.0...HEAD
+[Unreleased]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.22.2...HEAD
+[0.22.2]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.22.1...v0.22.2
+[0.22.1]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.22.0...v0.22.1
 [0.22.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/transpiler-mate/cwl2ogc/compare/v0.19.0...v0.20.0
