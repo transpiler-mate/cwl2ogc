@@ -33,7 +33,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "loguru==0.7.3",
+  "loguru==0.8.0",
   "transpiler-mate-api>=1.0.0"
 ]
 
